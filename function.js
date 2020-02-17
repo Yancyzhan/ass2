@@ -1,134 +1,64 @@
-/*
-TODO:
-    Limit number input
-    Disallow . from being entered multiple times
-    Clean up structure
-*/
+var flag = false;
+var number = document.getElementsByClassName('number');
+var operator = document.getElementsByClassName('button');
+var last = document.getElementById('LastAnswer');
+var current = document.getElementById('currentAnswer');
+var clear = document.getElementById('clear');
+var back = document.getElementById('back');
+var equal = document.getElementById('equal');
+var answer = document.getElementById('answer');
 
-(function() {
-    "use strict";
-
-    // Shortcut to get elements
-    var el = function(element) {
-        if (element.charAt(0) === "#") { // If passed an ID...
-            return document.querySelector(element); // ... returns single element
-        }
-
-        return document.querySelectorAll(element); // Otherwise, returns a nodelist
-    };
-
-    // Variables
-    var viewer = el("#0"), // Calculator screen where result is displayed
-        equals = el("#equal"), // Equal button
-        nums = el(".number"), // List of numbers
-        ops = el(".ops"), // List of operators
-        theNum = "", // Current number
-        oldNum = "", // First number
-        resultNum, // Result
-        operator; // Batman
-
-    // When: Number is clicked. Get the current number selected
-    var setNum = function() {
-        if (resultNum) { // If a result was displayed, reset number
-            theNum = this.getAttribute("data-num");
-            resultNum = "";
-        } else { // Otherwise, add digit to previous number (this is a string!)
-            theNum += this.getAttribute("data-num");
-        }
-
-        viewer.innerHTML = theNum; // Display current number
-
-    };
-
-    // When: Operator is clicked. Pass number to oldNum and save operator
-    var moveNum = function() {
-        oldNum = theNum;
-        theNum = "";
-        operator = this.getAttribute("data-ops");
-
-        equals.setAttribute("data-result", ""); // Reset result in attr
-    };
-
-    // When: Equals is clicked. Calculate result
-    var displayNum = function() {
-
-        // Convert string input to numbers
-        oldNum = parseFloat(oldNum);
-        theNum = parseFloat(theNum);
-
-        // Perform operation
-        switch (operator) {
-            case "plus":
-                resultNum = oldNum + theNum;
-                break;
-
-            case "minus":
-                resultNum = oldNum - theNum;
-                break;
-
-            case "times":
-                resultNum = oldNum * theNum;
-                break;
-
-            case "divided by":
-                resultNum = oldNum / theNum;
-                break;
-
-            // If equal is pressed without an operator, keep number and continue
-            default:
-                resultNum = theNum;
-        }
-
-        // If NaN or Infinity returned
-        if (!isFinite(resultNum)) {
-            if (isNaN(resultNum)) { // If result is not a number; set off by, eg, double-clicking operators
-                resultNum = "You broke it!";
-            } else { // If result is infinity, set off by dividing by zero
-                resultNum = "Look at what you've done";
-                el('#calculator').classList.add("broken"); // Break calculator
-                el('#reset').classList.add("show"); // And show reset button
-            }
-        }
-
-        // Display result, finally!
-        viewer.innerHTML = resultNum;
-        equals.setAttribute("data-result", resultNum);
-
-        // Now reset oldNum & keep result
-        oldNum = 0;
-        theNum = resultNum;
-
-    };
-
-    // When: Clear button is pressed. Clear everything
-    var clearAll = function() {
-        oldNum = "";
-        theNum = "";
-        viewer.innerHTML = "0";
-        equals.setAttribute("data-result", resultNum);
-    };
-
-    /* The click events */
-
-    // Add click event to numbers
-    for (var i = 0, l = nums.length; i < l; i++) {
-        nums[i].onclick = setNum;
+var InputNumber = function(object) {
+    if(flag === true){
+        flag = false;
+        current.innerText = object.target.innerText;
+    } else{
+        current.innerText += object.target.innerText;
     }
+}
 
-    // Add click event to operators
-    for (var i = 0, l = ops.length; i < l; i++) {
-        ops[i].onclick = moveNum;
+var InputOperator = function(object){
+    if(flag === true){
+        flag = false;
     }
+    current.innerText += object.target.innerText;
+}
 
-    // Add click event to equal sign
-    equals.onclick = displayNum;
+for (let i = 0; i < number.length; i++) {
+    number[i].addEventListener('click', InputNumber);
+}
+for (let i = 0; i < operator.length; i++) {
+    operator[i].addEventListener('click', InputOperator);
+}
 
-    // Add click event to clear button
-    el("#clear").onclick = clearAll;
+back.onclick = function(){
+    let str = current.innerText.length;
+    current.innerText = current.innerText.slice(0, str-1);
+}
 
-    // Add click event to reset button
-    el("#reset").onclick = function() {
-        window.location = window.location;
-    };
+clear.onclick = function(){
+    current.innerText = "";
+}
 
-}());
+equal.onclick = function(){
+    let index = current.innerText;
+    if(index.length !== 0 && index !== "Error"){
+        let current_answer;
+        try {
+            current_answer = eval(index);
+        } catch (e) {
+            current_answer = "Error";
+        }
+        last.innerText = current_answer;
+    }
+    flag = true;
+}
+
+answer.onclick = function(){
+    if(flag === true){
+        flag = false;
+        current.innerText = last.innerText;
+    } else{
+        current.innerText += last.innerText;
+    }
+}
