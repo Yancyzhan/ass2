@@ -82,7 +82,8 @@ body {
 }
 @media only screen and (max-width:600px){
     body{
-        width:auto;
+        width:100%;
+        height: 100%;
         margin:0;
     }
 }
