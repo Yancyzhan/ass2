@@ -62,6 +62,7 @@ body {
     grid-column-start: 1;
     grid-column-end: 3;
 }
+
 #LastAnswer {
     text-align: right;
     width: 100%;
